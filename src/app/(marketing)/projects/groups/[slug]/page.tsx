@@ -1,134 +1,186 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
-import { toast } from "sonner";
+import { useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { ArrowRight, Building2, CheckCircle2, SearchX } from "lucide-react";
 import Wrapper from "@/components/global/wrapper";
-import { projectGroupService } from "@/http/project-groups";
+import PageHero, { HeroMetaChip } from "@/components/projects/page-hero";
+import SectionHeading from "@/components/projects/section-heading";
 import ProjectGroupList from "@/components/projects/project-group-list";
-import { PortfolioProject } from "@/components/projects/project-card";
+import CollectionsStrip from "@/components/projects/collections-strip";
+import { ProjectGridSkeleton } from "@/components/projects/skeletons";
+import ResetScrollOnReload from "@/components/projects/reset-scroll-on-reload";
+import {
+  PortfolioProject,
+  ProjectGroupSummary,
+  getProjectImage,
+  PROJECT_FALLBACK_IMAGE,
+} from "@/components/projects/types";
+import { projectGroupService } from "@/http/project-groups";
+import { projectService } from "@/http/projects";
 
-function getHeroImage(projects: PortfolioProject[]) {
+function getHeroImage(
+  group: ProjectGroupSummary | null | undefined,
+  projects: PortfolioProject[],
+) {
+  if (group?.coverImageUrl) return group.coverImageUrl;
   const featured = projects.find((project) => project.featured) || projects[0];
-  if (!featured) return "/images/4.avif";
-  const firstImg = featured.images?.[0];
-  if (typeof firstImg === "string") return firstImg;
-  return firstImg?.url || featured.logoUrl || "/images/4.avif";
+  return featured ? getProjectImage(featured) : PROJECT_FALLBACK_IMAGE;
+}
+
+function HeroSkeleton() {
+  return (
+    <div className="relative flex h-[66vh] min-h-[460px] w-full animate-pulse items-center justify-center overflow-hidden rounded-b-[60px] bg-zinc-900 sm:rounded-b-[100px] lg:h-[74vh] lg:rounded-b-[160px]">
+      <div className="w-full max-w-2xl space-y-6 px-6 text-center">
+        <div className="mx-auto h-9 w-40 rounded-full bg-zinc-800" />
+        <div className="mx-auto h-14 w-3/4 rounded-full bg-zinc-800" />
+        <div className="mx-auto h-4 w-full rounded-full bg-zinc-800" />
+        <div className="mx-auto h-4 w-2/3 rounded-full bg-zinc-800" />
+      </div>
+    </div>
+  );
 }
 
 export default function ProjectGroupPage() {
   const params = useParams();
   const slug = params.slug as string;
-  const [groupName, setGroupName] = useState("");
-  const [groupDescription, setGroupDescription] = useState("");
-  const [projects, setProjects] = useState<PortfolioProject[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
 
-  useEffect(() => {
-    const fetchGroup = async () => {
-      try {
-        setIsLoading(true);
-        const response = await projectGroupService.getPublishedGroup(slug);
-        if (response.success && response.data) {
-          setGroupName(response.data.name);
-          setGroupDescription(response.data.description || "");
-          setProjects(response.data.projects || []);
-          setNotFound(false);
-        } else {
-          setNotFound(true);
-        }
-      } catch (error) {
-        console.error("Error fetching project group:", error);
-        toast.error("Failed to load project group");
-        setNotFound(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["published-project-group", slug],
+    queryFn: async () => {
+      const response = await projectGroupService.getPublishedGroup(slug);
+      if (!response?.success || !response.data) return null;
+      return response.data as ProjectGroupSummary;
+    },
+    enabled: Boolean(slug),
+  });
 
-    if (slug) fetchGroup();
-  }, [slug]);
+  const { data: allGroups = [] } = useQuery<ProjectGroupSummary[]>({
+    queryKey: ["published-project-groups"],
+    queryFn: async () => {
+      const response = await projectGroupService.getPublishedGroups();
+      return Array.isArray(response?.data) ? response.data : [];
+    },
+  });
 
-  const heroImage = getHeroImage(projects);
-  const projectCount = projects.length;
+  // Shares its cache with the listing page; used only for collection cover art.
+  const { data: allProjects = [] } = useQuery<PortfolioProject[]>({
+    queryKey: ["published-projects"],
+    queryFn: async () => {
+      const response = await projectService.getPublishedProjects({
+        page: 1,
+        limit: 100,
+      });
+      return response?.success ? response.data || [] : [];
+    },
+  });
+
+  const projects = (data?.projects || []) as PortfolioProject[];
+  const notFound = !isLoading && (isError || !data);
+  const otherGroups = allGroups.filter((group) => group.slug !== slug);
+  const completedCount = projects.filter(
+    (project) => project.status === "COMPLETED",
+  ).length;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen overflow-x-hidden bg-black">
+        <ResetScrollOnReload />
+        <HeroSkeleton />
+        <Wrapper className="mx-auto max-w-7xl px-4 py-20 md:py-28">
+          <ProjectGridSkeleton count={3} />
+        </Wrapper>
+      </div>
+    );
+  }
+
+  if (notFound) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-black px-4 py-32 text-center">
+        <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-zinc-900">
+          <SearchX className="h-9 w-9 text-amber-400/80" />
+        </div>
+        <h1 className="text-3xl font-bold text-zinc-50 sm:text-4xl">
+          This collection doesn&apos;t exist
+        </h1>
+        <p className="mt-4 max-w-md text-base text-zinc-400">
+          It may have been renamed or unpublished. The full portfolio is still
+          right here.
+        </p>
+        <Link
+          href="/projects"
+          className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#fbe575] px-7 py-3.5 text-sm font-bold text-black transition-transform duration-300 hover:scale-[1.03]"
+        >
+          Browse all projects
+          <ArrowRight className="h-4 w-4" />
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-black">
-      <div className="relative flex h-[70vh] min-h-[520px] w-full items-center justify-center overflow-hidden rounded-b-[80px] sm:rounded-b-[140px] lg:rounded-b-[180px]">
-        <Image
-          src={heroImage}
-          alt={groupName || "Project collection"}
-          fill
-          className="object-cover brightness-[0.4]"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/55 to-black/85" />
+      <ResetScrollOnReload />
+      <PageHero
+        image={getHeroImage(data, projects)}
+        size="compact"
+        backHref="/projects"
+        eyebrow="Collection"
+        title={data?.name || "Collection"}
+        subtitle={data?.description || undefined}
+        meta={
+          <>
+            <HeroMetaChip icon={<Building2 className="h-4 w-4 text-amber-300" />}>
+              {projects.length} {projects.length === 1 ? "project" : "projects"}
+            </HeroMetaChip>
+            {completedCount > 0 && (
+              <HeroMetaChip
+                icon={<CheckCircle2 className="h-4 w-4 text-emerald-300" />}
+              >
+                {completedCount} completed
+              </HeroMetaChip>
+            )}
+          </>
+        }
+      />
 
-        <div className="relative z-10 mx-auto max-w-4xl px-4 text-center">
-          <Link
-            href="/projects"
-            className="mb-8 inline-flex items-center text-sm text-gray-300 transition-colors hover:text-amber-400"
-          >
-            <svg
-              className="mr-2 h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            All projects
-          </Link>
-
-          <h1 className="text-5xl font-thin tracking-tighter text-white md:text-7xl">
-            {isLoading ? "Loading..." : groupName || "Collection"}
-          </h1>
-
-          {groupDescription && (
-            <p className="mx-auto mt-6 max-w-2xl font-sans text-lg font-light text-gray-300">
-              {groupDescription}
-            </p>
-          )}
-
-          {!isLoading && !notFound && (
-            <p className="mt-8 text-sm uppercase tracking-[0.25em] text-amber-400">
-              {projectCount} {projectCount === 1 ? "project" : "projects"}
-            </p>
-          )}
-        </div>
-      </div>
-
-      <Wrapper className="mx-auto max-w-7xl px-4 py-16 md:py-24">
-        {isLoading && (
-          <div className="flex items-center justify-center py-20">
-            <div className="h-12 w-12 animate-spin rounded-full border-t-2 border-b-2 border-amber-500" />
-          </div>
-        )}
-
-        {!isLoading && notFound && (
-          <div className="py-20 text-center">
-            <h2 className="text-2xl font-thin text-white">
-              This collection could not be found
-            </h2>
+      <Wrapper className="mx-auto max-w-7xl px-4 py-20 md:py-28">
+        <SectionHeading
+          eyebrow="Inside the collection"
+          title={
+            <>
+              Projects in{" "}
+              <span className="text-amber-400">{data?.name || "this collection"}</span>
+            </>
+          }
+          action={
             <Link
               href="/projects"
-              className="mt-4 inline-block text-amber-400 hover:text-amber-300"
+              className="inline-flex items-center gap-2 rounded-full border border-zinc-700 px-6 py-3 text-sm font-semibold text-zinc-200 transition-colors hover:border-amber-400/60 hover:text-amber-300"
             >
-              Browse all projects
+              View the full portfolio
+              <ArrowRight className="h-4 w-4" />
             </Link>
-          </div>
-        )}
+          }
+        />
 
-        {!isLoading && !notFound && <ProjectGroupList projects={projects} />}
+        <ProjectGroupList projects={projects} />
       </Wrapper>
+
+      {otherGroups.length > 0 && (
+        <Wrapper className="mx-auto max-w-7xl px-4 pb-24 md:pb-32">
+          <SectionHeading
+            eyebrow="Keep exploring"
+            title={
+              <>
+                Other <span className="text-amber-400">collections</span>
+              </>
+            }
+          />
+          <CollectionsStrip groups={otherGroups} projects={allProjects} />
+        </Wrapper>
+      )}
     </div>
   );
 }

@@ -1,163 +1,227 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import Image from "next/image";
-import Wrapper from "@/components/global/wrapper";
 import Link from "next/link";
-import { toast } from "sonner";
-import { projectService } from "@/http/projects";
+import { useQuery } from "@tanstack/react-query";
+import { AlertCircle, ArrowRight, Building2, CheckCircle2, Layers } from "lucide-react";
+import Wrapper from "@/components/global/wrapper";
+import PageHero, { HeroMetaChip } from "@/components/projects/page-hero";
+import SectionHeading from "@/components/projects/section-heading";
 import ProjectPortfolio from "@/components/projects/project-portfolio";
-import { PortfolioProject } from "@/components/projects/project-card";
+import CollectionsStrip, {
+  CollectionsStripSkeleton,
+} from "@/components/projects/collections-strip";
+import {
+  FilterBarSkeleton,
+  ProjectGridSkeleton,
+} from "@/components/projects/skeletons";
+import ResetScrollOnReload from "@/components/projects/reset-scroll-on-reload";
+import {
+  PortfolioProject,
+  ProjectGroupSummary,
+  getProjectImage,
+  PROJECT_FALLBACK_IMAGE,
+} from "@/components/projects/types";
+import { projectService } from "@/http/projects";
+import { projectGroupService } from "@/http/project-groups";
 
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState<PortfolioProject[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const heroRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
+  const {
+    data: projects = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery<PortfolioProject[]>({
+    queryKey: ["published-projects"],
+    queryFn: async () => {
+      const response = await projectService.getPublishedProjects({
+        page: 1,
+        limit: 100,
+      });
+      return response?.success ? response.data || [] : [];
+    },
   });
 
-  const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, 150]);
+  const { data: groups = [], isLoading: groupsLoading } = useQuery<
+    ProjectGroupSummary[]
+  >({
+    queryKey: ["published-project-groups"],
+    queryFn: async () => {
+      const response = await projectGroupService.getPublishedGroups();
+      return Array.isArray(response?.data) ? response.data : [];
+    },
+  });
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        setIsLoading(true);
-        const response = await projectService.getPublishedProjects({
-          page: 1,
-          limit: 100,
-        });
+  const featuredProject =
+    projects.find((project) => project.featured) || projects[0];
+  const completedCount = projects.filter(
+    (project) => project.status === "COMPLETED",
+  ).length;
 
-        if (response.success) {
-          setProjects(response.data || []);
-        } else {
-          setProjects([]);
-        }
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-        toast.error("Failed to load projects");
-        setProjects([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProjects();
-  }, []);
-
-  const featuredProject = projects.find((p) => p.featured) || projects[0];
+  const heroImage = featuredProject
+    ? getProjectImage(featuredProject)
+    : PROJECT_FALLBACK_IMAGE;
 
   return (
-    <div className="bg-black min-h-screen overflow-x-hidden">
-      <motion.div
-        ref={heroRef}
-        className="relative rounded-b-[200px] h-screen w-full overflow-hidden flex items-center justify-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.2 }}
-      >
-        <motion.div
-          className="absolute inset-0 z-0"
-          style={{ scale: heroScale, y: heroY }}
-        >
-          <Image
-            src={
-              typeof featuredProject?.images?.[0] === "string"
-                ? featuredProject.images[0]
-                : featuredProject?.images?.[0]?.url || "/images/4.avif"
-            }
-            alt="Projects Showcase"
-            fill
-            className="object-cover brightness-[0.4]"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/80 mix-blend-multiply" />
-        </motion.div>
-
-        <div className="relative z-20 max-w-7xl mx-auto px-4 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2 }}
-            className="mb-6"
-          >
-            <span className="inline-block px-4 py-1 bg-amber-500/90 text-white rounded-full text-sm font-medium mb-6 backdrop-blur-sm shadow-lg shadow-amber-500/30">
-              OUR PORTFOLIO
-            </span>
-          </motion.div>
-
-          <motion.h1
-            className="text-5xl md:text-6xl lg:text-7xl tracking-tighter font-thin text-white mb-8"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.5 }}
-          >
-            Exceptional <span className="text-amber-400">Projects</span>
-            <div className="mt-6"> Built to Last</div>
-          </motion.h1>
-          <motion.p
-            className="text-xl md:text-xl font-sans text-gray-300 max-w-3xl mx-auto mb-12 font-light"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.8 }}
-          >
-            Browse our showcase of award-winning construction projects spanning
-            residential, commercial, and industrial sectors.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 1.1 }}
-          >
-            {featuredProject && (
-              <Link
-                href={`/projects/${featuredProject.slug || featuredProject.id}`}
-              >
-                <button className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-full text-sm font-bold shadow-2xl transition-all duration-300 hover:shadow-amber-500/40 hover:scale-105 mr-4">
-                  Explore {featuredProject.title}
-                </button>
-              </Link>
-            )}
-            <Link href="/contact-us">
-              <button className="bg-transparent text-white border-2 border-white/80 px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 hover:bg-white/10 hover:border-white">
-                Contact Us
-              </button>
+    <div className="min-h-screen overflow-x-hidden bg-black">
+      <ResetScrollOnReload />
+      <PageHero
+        image={heroImage}
+        eyebrow="Our portfolio"
+        title={
+          <>
+            Exceptional projects,
+            <br className="hidden sm:block" />{" "}
+            <span className="text-amber-400">built to last</span>
+          </>
+        }
+        subtitle="A showcase of residential, commercial and industrial work — each one delivered with the same standard of craft, safety and finish."
+        meta={
+          projects.length > 0 ? (
+            <>
+              <HeroMetaChip icon={<Building2 className="h-4 w-4 text-amber-300" />}>
+                {projects.length} {projects.length === 1 ? "project" : "projects"}
+              </HeroMetaChip>
+              {completedCount > 0 && (
+                <HeroMetaChip
+                  icon={<CheckCircle2 className="h-4 w-4 text-emerald-300" />}
+                >
+                  {completedCount} completed
+                </HeroMetaChip>
+              )}
+              {groups.length > 0 && (
+                <HeroMetaChip icon={<Layers className="h-4 w-4 text-amber-300" />}>
+                  {groups.length}{" "}
+                  {groups.length === 1 ? "collection" : "collections"}
+                </HeroMetaChip>
+              )}
+            </>
+          ) : null
+        }
+        actions={
+          <>
+            <Link
+              href={groups.length > 0 ? "#collections" : "#portfolio"}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#fbe575] px-7 py-3.5 text-sm font-bold text-black shadow-xl transition-transform duration-300 hover:scale-[1.03] sm:w-auto"
+            >
+              {groups.length > 0 ? "Explore collections" : "View the portfolio"}
+              <ArrowRight className="h-4 w-4 shrink-0" />
             </Link>
-          </motion.div>
-        </div>
-      </motion.div>
+            <Link
+              href="/contact-us"
+              className="inline-flex w-full items-center justify-center rounded-full border-2 border-white/70 px-7 py-3.5 text-sm font-bold text-white transition-colors duration-300 hover:border-white hover:bg-white/10 sm:w-auto"
+            >
+              Talk to our team
+            </Link>
+          </>
+        }
+        scrollCueHref="#portfolio"
+      />
 
-      <Wrapper className="max-w-7xl mx-auto px-4 py-20">
-        <motion.div
-          className="mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
-          <div className="text-center mb-12">
-            <h2 className="text-6xl font-bold text-white mb-6">
-              Discover Our <span className="text-amber-500">Portfolio</span>
-            </h2>
-            <p className="text-gray-400 font-sans max-w-2xl mx-auto text-lg">
-              Each project represents our commitment to excellence, innovation,
-              and client satisfaction.
+      <div id="portfolio" className="scroll-mt-24" />
+      <Wrapper className="mx-auto max-w-7xl px-4 py-20 md:py-28">
+        <SectionHeading
+          eyebrow="The work"
+          title={
+            <>
+              Discover our <span className="text-amber-400">portfolio</span>
+            </>
+          }
+          description="Filter by sector, status or location to find work closest to what you're planning."
+        />
+
+        {isLoading && (
+          <>
+            <FilterBarSkeleton />
+            <ProjectGridSkeleton />
+          </>
+        )}
+
+        {!isLoading && isError && (
+          <div className="rounded-3xl border border-red-500/20 bg-red-950/20 px-6 py-20 text-center">
+            <AlertCircle className="mx-auto mb-5 h-12 w-12 text-red-400" />
+            <h3 className="text-xl font-bold text-zinc-100">
+              We couldn&apos;t load the portfolio
+            </h3>
+            <p className="mx-auto mt-3 max-w-md text-sm text-zinc-400">
+              Something went wrong on our side. Please try again in a moment.
             </p>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#fbe575] px-6 py-3 text-sm font-semibold text-black transition-transform duration-200 hover:scale-[1.03]"
+            >
+              Try again
+            </button>
           </div>
+        )}
 
-          {isLoading && (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-500"></div>
+        {!isLoading && !isError && projects.length === 0 && (
+          <div className="rounded-3xl border border-zinc-800 bg-zinc-900/40 px-6 py-20 text-center">
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800/80">
+              <Building2 className="h-7 w-7 text-amber-400/80" />
             </div>
-          )}
+            <h3 className="text-xl font-bold text-zinc-100">
+              Our portfolio is being updated
+            </h3>
+            <p className="mx-auto mt-3 max-w-md text-sm text-zinc-400">
+              New projects are on the way. In the meantime, our team can walk
+              you through recent work directly.
+            </p>
+            <Link
+              href="/contact-us"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#fbe575] px-6 py-3 text-sm font-semibold text-black transition-transform duration-200 hover:scale-[1.03]"
+            >
+              Get in touch
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        )}
 
-          {!isLoading && <ProjectPortfolio projects={projects} />}
-        </motion.div>
+        {!isLoading && !isError && projects.length > 0 && (
+          <ProjectPortfolio projects={projects} showLeadCard />
+        )}
+      </Wrapper>
+
+      <div id="collections" className="scroll-mt-28" />
+      {(groupsLoading || groups.length > 0) && (
+        <Wrapper className="mx-auto max-w-7xl px-4 pb-20 md:pb-28">
+          <SectionHeading
+            eyebrow="Collections"
+            title={
+              <>
+                Explore by <span className="text-amber-400">collection</span>
+              </>
+            }
+            description="Related developments grouped together, so you can see a whole neighbourhood at once."
+          />
+          {groupsLoading ? (
+            <CollectionsStripSkeleton />
+          ) : (
+            <CollectionsStrip groups={groups} projects={projects} />
+          )}
+        </Wrapper>
+      )}
+
+      <Wrapper className="mx-auto max-w-7xl px-4 pb-24 md:pb-32">
+        <div className="relative overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-900 px-6 py-14 text-center sm:px-12 sm:py-20">
+          <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-amber-500/10 blur-3xl" />
+          <div className="relative">
+            <h2 className="text-3xl font-bold text-zinc-50 sm:text-4xl">
+              Have a project in mind?
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-base text-zinc-400">
+              Tell us about the site, the timeline and the brief — we&apos;ll
+              come back with an approach and a realistic budget.
+            </p>
+            <Link
+              href="/contact-us"
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#fbe575] px-8 py-4 text-base font-bold text-black shadow-xl transition-transform duration-300 hover:scale-[1.03]"
+            >
+              Start a conversation
+              <ArrowRight className="h-5 w-5" />
+            </Link>
+          </div>
+        </div>
       </Wrapper>
     </div>
   );
