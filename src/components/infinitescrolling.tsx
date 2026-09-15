@@ -21,6 +21,15 @@ interface Project {
   location: string;
   image: string;
   slug: string;
+  /** Set when the project lives on its own site instead of /projects/<slug>. */
+  externalUrl?: string;
+}
+
+/** Where a project card points, and whether it should open in a new tab. */
+function projectLink(project: Project) {
+  return project.externalUrl
+    ? { href: project.externalUrl, external: true as const }
+    : { href: `/projects/${project.slug}`, external: false as const };
 }
 
 // Sample project data
@@ -40,6 +49,7 @@ const projects: Project[] = [
     location: "Lucknow, UP",
     image: "/images/Clubhouse.jpg",
     slug: "amor-reality",
+    externalUrl: "https://amorvillaslucknow.com/",
   },
   {
     id: "2",
@@ -64,6 +74,7 @@ const StackedProjectCard = ({
   totalCards: number;
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
+  const link = projectLink(project);
 
   const { scrollYProgress } = useScroll({
     target: cardRef,
@@ -120,7 +131,9 @@ const StackedProjectCard = ({
             {/* Title - Now supports text or image with controlled dimensions */}
             <div className="mb-8">
               <Link
-                href={`/projects/${project.slug}`}
+                href={link.href}
+                target={link.external ? "_blank" : undefined}
+                rel={link.external ? "noopener noreferrer" : undefined}
                 className={`${
                   typeof project.title === "string"
                     ? "hover:text-amber-600 transition-colors"
@@ -171,7 +184,14 @@ const StackedProjectCard = ({
             {/* Arrow Button - Changed color to bg-[#e0d089] */}
             <div className="absolute -bottom-8 -right-8 md:-bottom-9 md:-right-9">
               <Link
-                href={`/projects/${project.slug}`}
+                href={link.href}
+                target={link.external ? "_blank" : undefined}
+                rel={link.external ? "noopener noreferrer" : undefined}
+                aria-label={`Open ${
+                  typeof project.title === "string"
+                    ? project.title
+                    : project.title.alt
+                }`}
                 className="flex items-center justify-center w-[72px] h-[72px] md:w-20 md:h-20 rounded-full bg-[#e0d089] text-zinc-800 hover:bg-[#d4c47d] shadow-[0_10px_30px_rgba(0,0,0,0.25)] transition-all duration-300 hover:scale-105 group"
               >
                 <svg
