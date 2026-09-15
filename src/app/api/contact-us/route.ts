@@ -1,17 +1,7 @@
 import adminContactNotification from "@/lib/email-templates/adminContactNotification";
 import customerContactThankYou from "@/lib/email-templates/customerContactThankYou";
 import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
-
-const mailTransport = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),
-  secure: process.env.SMTP_PORT === "465",
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+import { mailTransport, MAIL_FROM, sendQuietly } from "@/lib/mailer";
 
 const budgetMap: Record<string, string> = {
   "upto-75": "Up to ₹75 Lacs",
@@ -81,8 +71,9 @@ export async function POST(request: Request) {
 
     // Prepare admin email
     const adminMailOptions = {
-      from: process.env.SMTP_USER,
+      from: MAIL_FROM,
       to: process.env.EMAIL_TO,
+      replyTo: email,
       subject: `🔥 New Contact Enquiry: ${name} - ${projectDisplay} ${typeDisplay}`,
       html: adminContactNotification({
         name,
@@ -97,7 +88,7 @@ export async function POST(request: Request) {
 
     // Prepare customer email
     const customerMailOptions = {
-      from: process.env.SMTP_USER,
+      from: MAIL_FROM,
       to: email,
       subject: `Thank You for Your Interest in CCS INFRATECH, ${name}!`,
       html: customerContactThankYou({
@@ -113,7 +104,7 @@ export async function POST(request: Request) {
 
     // Send both emails
     await mailTransport.sendMail(adminMailOptions);
-    await mailTransport.sendMail(customerMailOptions);
+    await sendQuietly(customerMailOptions, "contact thank-you");
 
     // Return success response
     return NextResponse.json(

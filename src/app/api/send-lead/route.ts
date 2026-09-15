@@ -1,17 +1,7 @@
 import adminLeadNotification from "@/lib/email-templates/adminLeadNotification";
 import customerThankYou from "@/lib/email-templates/customerThankYou";
 import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
-
-const mailTransport = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),
-  secure: process.env.SMTP_PORT === "465",
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+import { mailTransport, MAIL_FROM, sendQuietly } from "@/lib/mailer";
 
 const budgetMap: Record<string, string> = {
   "upto-75": "Up to ₹75 Lacs",
@@ -40,8 +30,9 @@ export async function POST(request: Request) {
     const budgetDisplay = budgetMap[budget] || budget;
 
     const adminMailOptions = {
-      from: process.env.SMTP_USER,
+      from: MAIL_FROM,
       to: process.env.EMAIL_TO,
+      replyTo: email,
       subject: `🔥 New Lead: ${fullName} - ${budgetDisplay}`,
       html: adminLeadNotification({
         fullName,
@@ -53,7 +44,7 @@ export async function POST(request: Request) {
     };
 
     const customerMailOptions = {
-      from: process.env.SMTP_USER,
+      from: MAIL_FROM,
       to: email,
       subject: `Thank You for Your Interest in CCS Infratech Villas, ${fullName}!`,
       html: customerThankYou({
@@ -66,7 +57,7 @@ export async function POST(request: Request) {
     };
 
     await mailTransport.sendMail(adminMailOptions);
-    await mailTransport.sendMail(customerMailOptions);
+    await sendQuietly(customerMailOptions, "lead thank-you");
 
     return NextResponse.json({
       message: "Emails sent successfully to both admin and customer",

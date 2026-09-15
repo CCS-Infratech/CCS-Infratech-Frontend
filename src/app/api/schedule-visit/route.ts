@@ -1,17 +1,7 @@
 import adminVisitNotification from "@/lib/email-templates/adminVisitNotification";
 import customerVisitConfirmation from "@/lib/email-templates/customerVisitConfirmation";
 import { NextResponse } from "next/server";
-import nodemailer from "nodemailer";
-
-const mailTransport = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),
-  secure: process.env.SMTP_PORT === "465",
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+import { mailTransport, MAIL_FROM, sendQuietly } from "@/lib/mailer";
 
 const timeSlotMap: Record<string, string> = {
   "09:00-10:00": "09:00 AM - 10:00 AM",
@@ -51,8 +41,9 @@ export async function POST(request: Request) {
     const visitTime = timeSlotMap[time] || time;
 
     const adminMailOptions = {
-      from: process.env.SMTP_USER,
+      from: MAIL_FROM,
       to: process.env.EMAIL_TO,
+      replyTo: email,
       subject: `🏢 New Site Visit Scheduled: ${fullName} - ${visitDate}`,
       html: adminVisitNotification({
         fullName,
@@ -66,7 +57,7 @@ export async function POST(request: Request) {
 
     const customerMailOptions = email
       ? {
-          from: process.env.SMTP_USER,
+          from: MAIL_FROM,
           to: email,
           subject: `Site Visit Confirmed - Club Towers, ${fullName}!`,
           html: customerVisitConfirmation({
@@ -83,7 +74,7 @@ export async function POST(request: Request) {
     await mailTransport.sendMail(adminMailOptions);
 
     if (customerMailOptions) {
-      await mailTransport.sendMail(customerMailOptions);
+      await sendQuietly(customerMailOptions, "site-visit confirmation");
     }
 
     return NextResponse.json({
