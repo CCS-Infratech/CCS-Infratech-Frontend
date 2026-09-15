@@ -6,12 +6,7 @@ export const NAV_LINKS = [
   {
     name: "Projects",
     link: "/projects",
-    dropdown: [
-      {
-        name: "Amor",
-        link: "/projects/amor-reality",
-      },
-    ],
+    dropdown: [] as { name: string; link: string }[],
   },
   {
     name: "Blogs",

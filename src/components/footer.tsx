@@ -22,7 +22,7 @@ const Footer = () => {
     column1: [
       { label: "Home", href: "/" },
       { label: "About Us", href: "/about-us" },
-      { label: "Projects", href: "/projects/amor-reality" },
+      { label: "Projects", href: "/projects" },
     ],
     column2: [
       { label: "Blogs", href: "/blogs" },

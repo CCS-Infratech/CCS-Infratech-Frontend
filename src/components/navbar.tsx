@@ -8,8 +8,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Download, MenuIcon, XIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { useCallback, useRef, useState, memo } from "react";
+import { useCallback, useEffect, useRef, useState, memo } from "react";
 import Wrapper from "./global/wrapper";
+import { projectGroupService } from "@/http/project-groups";
 
 interface DropdownItem {
   name: string;
@@ -41,7 +42,7 @@ const DesktopDropdown = memo(
   }) => {
     const isOpen = activeDropdown === index;
 
-    if (!link.dropdown) {
+    if (!link.dropdown || link.dropdown.length === 0) {
       return (
         <Link
           href={link.link}
@@ -125,7 +126,7 @@ const MobileNavItem = memo(
   }) => {
     const isOpen = activeDropdown === index;
 
-    if (!navItem.dropdown) {
+    if (!navItem.dropdown || navItem.dropdown.length === 0) {
       return (
         <Link
           href={navItem.link}
@@ -200,7 +201,34 @@ MobileNavItem.displayName = "MobileNavItem";
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+  const [navLinks, setNavLinks] = useState<NavLink[]>(NAV_LINKS as NavLink[]);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const fetchProjectGroups = async () => {
+      try {
+        const response = await projectGroupService.getPublishedGroups();
+        const groups = Array.isArray(response?.data) ? response.data : [];
+        setNavLinks(
+          (NAV_LINKS as NavLink[]).map((link) =>
+            link.name === "Projects"
+              ? {
+                  ...link,
+                  dropdown: groups.map((group: { name: string; slug: string }) => ({
+                    name: group.name,
+                    link: `/projects/groups/${group.slug}`,
+                  })),
+                }
+              : link,
+          ),
+        );
+      } catch (error) {
+        console.error("Failed to load project groups", error);
+      }
+    };
+
+    fetchProjectGroups();
+  }, []);
 
   const mobileMenuRef = useClickOutside(() => {
     if (open) {
@@ -273,7 +301,7 @@ const Navbar = () => {
 
           {/* Nav Links */}
           <div className="hidden lg:flex flex-row flex-1 absolute inset-0 items-center justify-center w-max mx-auto gap-x-1 text-lg text-muted-foreground font-medium">
-            {(NAV_LINKS as NavLink[]).map((link, index) => (
+            {navLinks.map((link, index) => (
               <DesktopDropdown
                 key={index}
                 link={link}
@@ -406,7 +434,7 @@ const Navbar = () => {
               className="absolute top-full left-0 right-0 bg-neutral-950/98 backdrop-blur-md rounded-b-xl border-x border-b border-neutral-800 bg-black overflow-hidden shadow-2xl shadow-black/50 z-50"
             >
               <div className="flex flex-col gap-1 w-full px-4 py-6">
-                {(NAV_LINKS as NavLink[]).map((navItem, idx) => (
+                {navLinks.map((navItem, idx) => (
                   <MobileNavItem
                     key={idx}
                     navItem={navItem}

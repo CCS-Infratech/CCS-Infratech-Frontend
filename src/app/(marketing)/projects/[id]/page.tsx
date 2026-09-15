@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Download } from "lucide-react";
 import Wrapper from "@/components/global/wrapper";
 import { projectService } from "@/http/projects";
+import { formatProjectCategory } from "@/constants/projects";
 
 // Define interfaces for data structure
 interface ProjectStat {
@@ -180,7 +181,7 @@ export default function ProjectDetailPage() {
         const transformedProject: ProjectData = {
           id: apiData.id,
           title: projectTitle,
-          category: "Residential",
+          category: apiData.category || "RESIDENTIAL",
           status: apiData.status || "UNDER_CONSTRUCTION",
           location: apiData.location,
           year: apiData.completionDate
@@ -558,8 +559,7 @@ export default function ProjectDetailPage() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
               <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 lg:p-8">
                 <div className="inline-block px-3 sm:px-4 py-1 bg-amber-500 text-white rounded-lg text-xs sm:text-sm font-medium mb-2 sm:mb-3">
-                  {project.category.charAt(0).toUpperCase() +
-                    project.category.slice(1)}
+                  {formatProjectCategory(project.category)}
                 </div>
                 <p className="text-white text-base sm:text-lg lg:text-xl font-medium">
                   {project.overviewHeadline ||
