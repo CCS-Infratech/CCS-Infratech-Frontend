@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -28,25 +28,65 @@ import {
 } from "@/components/ui/form";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { cn } from "@/lib";
+import {
+  getPublicSiteSettings,
+  PublicSiteSettings,
+} from "@/lib/site-settings";
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
-  email: z.string().email({ message: "Please enter a valid email" }),
-  phone: z.string().min(10, { message: "Please enter a valid phone number" }),
-  project: z.string().min(1, { message: "Please select a project" }),
-  type: z.string().min(1, { message: "Please select a project type" }),
-  investment: z
-    .string()
-    .min(1, { message: "Please select an investment range" }),
+  name: z.string().min(2, {
+    message: "Name must be at least 2 characters",
+  }),
+  email: z.string().email({
+    message: "Please enter a valid email",
+  }),
+  phone: z.string().min(10, {
+    message: "Please enter a valid phone number",
+  }),
+  project: z.string().min(1, {
+    message: "Please select a project",
+  }),
+  type: z.string().min(1, {
+    message: "Please select a project type",
+  }),
+  investment: z.string().min(1, {
+    message: "Please select an investment range",
+  }),
 });
 
 export default function ContactSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const [siteSettings, setSiteSettings] =
+    useState<PublicSiteSettings | null>(null);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      const data = await getPublicSiteSettings();
+      setSiteSettings(data);
+    };
+
+    loadSettings();
+  }, []);
+
+  const phone =
+    siteSettings?.phone || "+(91) 70818-85577";
+
+  const email =
+    siteSettings?.email || "info@ccsinfratech.com";
+
+  const address =
+    siteSettings?.address ||
+    "Sarai Sheikh, Satrikh Road, Chinhat, Lucknow, UP - 226010";
+
+  const phoneHref = `tel:${phone.replace(/[^\d+]/g, "")}`;
+  const emailHref = `mailto:${email}`;
+
   return (
     <section className="w-full bg-white overflow-hidden">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-16 py-8 sm:py-12 lg:py-20 lg:mt-11">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-20 xl:gap-28">
+
           {/* Left Side - Info */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -69,25 +109,30 @@ export default function ContactSection() {
               <ContactDetail
                 icon={<Phone />}
                 label="Phone number"
-                value="+(91) 70818-85577"
-                href="tel:+917081885577"
+                value={phone}
+                href={phoneHref}
               />
+
               <ContactDetail
                 icon={<MailCheck />}
                 label="Email address"
-                value="info@ccsinfratech.com"
-                href="mailto:info@ccsinfratech.com"
+                value={email}
+                href={emailHref}
               />
+
               <ContactDetail
                 icon={<LocateIcon />}
                 label="Office address"
                 value={
-                  <>
-                    Sarai Sheikh, Satrikh Road, Chinhat, <br /> Lucknow, UP -
-                    226010
-                  </>
+                  <span className="whitespace-pre-line">
+                    {address}
+                  </span>
                 }
-                href="#"
+                href={
+                  siteSettings?.mapUrl ||
+                  siteSettings?.googleMapUrl ||
+                  "#"
+                }
               />
             </div>
           </motion.div>
@@ -134,19 +179,23 @@ function ContactForm({
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (
+    values: z.infer<typeof formSchema>
+  ) => {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post("/api/contact-us", values);
+      const response = await axios.post(
+        "/api/contact-us",
+        values
+      );
 
-      // Success
       toast.success("Enquiry Submitted!", {
-        description: "We'll contact you within 24 hours.",
+        description:
+          "We'll contact you within 24 hours.",
         duration: 5000,
       });
 
-      // Reset form
       form.reset({
         name: "",
         email: "",
@@ -156,19 +205,24 @@ function ContactForm({
         investment: "",
       });
     } catch (error) {
-      console.error("Error submitting enquiry:", error);
+      console.error(
+        "Error submitting enquiry:",
+        error
+      );
 
-      // Error handling
       if (axios.isAxiosError(error)) {
         const errorMessage =
-          error.response?.data?.error || "Failed to submit enquiry";
+          error.response?.data?.error ||
+          "Failed to submit enquiry";
+
         toast.error("Submission Failed", {
           description: errorMessage,
           duration: 6000,
         });
       } else {
         toast.error("Submission Failed", {
-          description: "Please try again or call us directly.",
+          description:
+            "Please try again or call us directly.",
           duration: 6000,
         });
       }
@@ -206,6 +260,7 @@ function ContactForm({
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="email"
@@ -239,7 +294,9 @@ function ContactForm({
                     onChange={field.onChange}
                     className={cn(
                       "h-11 sm:h-14 text-sm w-full rounded-2xl mt-4 border-none transition-all px-1",
-                      form.formState.errors.phone ? "ring-2 ring-red-500" : "",
+                      form.formState.errors.phone
+                        ? "ring-2 ring-red-500"
+                        : ""
                     )}
                   />
                 </FormControl>
@@ -258,16 +315,26 @@ function ContactForm({
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className={cn(commonInputClass, "text-sm")}>
+                    <SelectTrigger
+                      className={cn(
+                        commonInputClass,
+                        "text-sm"
+                      )}
+                    >
                       <SelectValue placeholder="Select Project..." />
                     </SelectTrigger>
                   </FormControl>
+
                   <SelectContent className="bg-white border-gray-200 shadow-xl">
-                    <SelectItem value="amor" className={selectItemClass}>
+                    <SelectItem
+                      value="amor"
+                      className={selectItemClass}
+                    >
                       Amor
                     </SelectItem>
                   </SelectContent>
                 </Select>
+
                 <FormMessage />
               </FormItem>
             )}
@@ -282,19 +349,33 @@ function ContactForm({
               <FormItem>
                 <Select onValueChange={field.onChange}>
                   <FormControl>
-                    <SelectTrigger className={cn(commonInputClass, "text-sm")}>
+                    <SelectTrigger
+                      className={cn(
+                        commonInputClass,
+                        "text-sm"
+                      )}
+                    >
                       <SelectValue placeholder="Project Type..." />
                     </SelectTrigger>
                   </FormControl>
+
                   <SelectContent className="bg-white border-gray-200 shadow-xl">
-                    <SelectItem value="plot" className={selectItemClass}>
+                    <SelectItem
+                      value="plot"
+                      className={selectItemClass}
+                    >
                       Plot
                     </SelectItem>
-                    <SelectItem value="villas" className={selectItemClass}>
+
+                    <SelectItem
+                      value="villas"
+                      className={selectItemClass}
+                    >
                       Villas
                     </SelectItem>
                   </SelectContent>
                 </Select>
+
                 <FormMessage />
               </FormItem>
             )}
@@ -308,17 +389,33 @@ function ContactForm({
                 <Select onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger
-                      className={cn(commonInputClass, "text-sm text-black")}
+                      className={cn(
+                        commonInputClass,
+                        "text-sm text-black"
+                      )}
                     >
                       <SelectValue placeholder="Investment Budget..." />
                     </SelectTrigger>
                   </FormControl>
+
                   <SelectContent className="bg-white border-gray-200 shadow-xl font-sans">
                     {[
-                      { value: "upto-75", label: "Up to ₹75 Lacs" },
-                      { value: "75-100", label: "₹75L - ₹1 Cr" },
-                      { value: "100-150", label: "₹1 - 1.5 Cr" },
-                      { value: "150-plus", label: "₹1.5 Cr+" },
+                      {
+                        value: "upto-75",
+                        label: "Up to ₹75 Lacs",
+                      },
+                      {
+                        value: "75-100",
+                        label: "₹75L - ₹1 Cr",
+                      },
+                      {
+                        value: "100-150",
+                        label: "₹1 - 1.5 Cr",
+                      },
+                      {
+                        value: "150-plus",
+                        label: "₹1.5 Cr+",
+                      },
                     ].map((item) => (
                       <SelectItem
                         key={item.value}
@@ -330,6 +427,7 @@ function ContactForm({
                     ))}
                   </SelectContent>
                 </Select>
+
                 <FormMessage />
               </FormItem>
             )}
@@ -340,6 +438,7 @@ function ContactForm({
           <p className="text-gray-700 font-sans text-xs sm:text-sm font-medium">
             We're excited to connect!
           </p>
+
           <p className="text-gray-400 text-[10px] mt-1">
             Required fields are marked *
           </p>
@@ -351,7 +450,10 @@ function ContactForm({
             disabled={isSubmitting}
             className="bg-[#e1d18a] text-black font-bold px-10 py-6 rounded-full group h-auto w-full sm:w-auto flex items-center gap-2 shadow-lg hover:bg-amber-300 transition-all"
           >
-            {isSubmitting ? "Sending..." : "Get A Call Back"}
+            {isSubmitting
+              ? "Sending..."
+              : "Get A Call Back"}
+
             {!isSubmitting && (
               <div className="bg-white rounded-full p-1">
                 <ArrowUpRight className="w-4 h-4 text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -379,13 +481,16 @@ function ContactDetail({
     <div className="flex items-start sm:items-center gap-4 mb-8">
       <div className="w-14 h-14 sm:w-20 sm:h-20 bg-[#e1d18a] rounded-full flex items-center justify-center flex-shrink-0">
         {cloneElement(icon, {
-          className: "w-6 h-6 sm:w-8 sm:h-8 text-gray-900",
+          className:
+            "w-6 h-6 sm:w-8 sm:h-8 text-gray-900",
         })}
       </div>
+
       <div>
         <p className="text-gray-500 text-xs sm:text-sm font-medium mb-1">
           {label}
         </p>
+
         <a
           href={href}
           className="text-lg sm:text-2xl font-bold text-gray-900 hover:text-amber-600 transition-colors block leading-tight"

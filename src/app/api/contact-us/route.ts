@@ -69,6 +69,45 @@ export async function POST(request: Request) {
     const projectDisplay = projectMap[project] || project;
     const typeDisplay = typeMap[type] || type;
 
+    // Save enquiry to CCS Lead Management
+    try {
+      const backendUrl =
+        process.env.CCS_BACKEND_URL || "http://127.0.0.1:8000";
+
+      const leadResponse = await fetch(`${backendUrl}/api/v1/leads`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "CONTACT",
+          name: name.trim(),
+          phone: phone.trim(),
+          email: email.trim(),
+          project: projectDisplay,
+          propertyType: typeDisplay,
+          budget: investmentDisplay,
+        }),
+        cache: "no-store",
+      });
+
+      if (!leadResponse.ok) {
+        console.error(
+          "Failed to save contact enquiry to lead management:",
+          await leadResponse.text(),
+        );
+      } else {
+        const leadData = await leadResponse.json();
+        console.log(
+          "Contact enquiry saved to lead management:",
+          leadData?.data?.id,
+        );
+      }
+    } catch (leadError) {
+      // Keep email submission working even if lead storage temporarily fails.
+      console.error("Error saving contact enquiry:", leadError);
+    }
+
     // Prepare admin email
     const adminMailOptions = {
       from: MAIL_FROM,

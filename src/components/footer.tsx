@@ -10,24 +10,85 @@ import {
   LinkedinIcon,
   MapPin,
 } from "lucide-react";
-import { useState } from "react";
-import QuoteDialog from "./quote-dialog";
+import { useEffect, useState } from "react";
 import ClubTowersModal from "./quote-dialog";
 import AnimationContainer from "./global/animation-container";
+import {
+  getPublicSiteSettings,
+  PublicSiteSettings,
+} from "@/lib/site-settings";
 
 const Footer = () => {
-  const [isQuoteDialogOpen, setIsQuoteDialogOpen] = useState(false);
+  const [isQuoteDialogOpen, setIsQuoteDialogOpen] =
+    useState(false);
+
+  const [siteSettings, setSiteSettings] =
+    useState<PublicSiteSettings | null>(null);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      const data = await getPublicSiteSettings();
+      setSiteSettings(data);
+    };
+
+    loadSettings();
+  }, []);
+
+  const phone =
+    siteSettings?.phone ||
+    "+(91) 70818-85577";
+
+  const email =
+    siteSettings?.email ||
+    "info@ccsinfratech.com";
+
+  const registeredOffice =
+    siteSettings?.registeredOffice ||
+    "451, Third Lane, Near Netaji Park, Nishatganj, New Hyderabad, Lucknow - 226007";
+
+  const corporateOffice =
+    siteSettings?.corporateOffice ||
+    "AMOR, Sarai Shekh Farm, Near SBI Bank and Nayara Petrol Pump, Satrikhroad, Chinhat, Lucknow - 227105";
+
+  const companyDescription =
+    siteSettings?.companyDescription ||
+    "We are creators of transformative spaces that inspire, innovate, and endure.";
+
+  const footerText =
+    siteSettings?.footerText ||
+    "© 2025 ccsinfratech. All Rights Reserved";
+
+  const phoneHref = `tel:${phone.replace(/[^\d+]/g, "")}`;
 
   const navigationLinks = {
     column1: [
-      { label: "Home", href: "/" },
-      { label: "About Us", href: "/about-us" },
-      { label: "Projects", href: "/projects" },
+      {
+        label: "Home",
+        href: "/",
+      },
+      {
+        label: "About Us",
+        href: "/about-us",
+      },
+      {
+        label: "Projects",
+        href: "/projects",
+      },
     ],
+
     column2: [
-      { label: "Blogs", href: "/blogs" },
-      { label: "Press & Coverage", href: "/media/press-coverage" },
-      { label: "Event & Campaigns", href: "/media/events-and-campaigns" },
+      {
+        label: "Blogs",
+        href: "/blogs",
+      },
+      {
+        label: "Press & Coverage",
+        href: "/media/press-coverage",
+      },
+      {
+        label: "Event & Campaigns",
+        href: "/media/events-and-campaigns",
+      },
     ],
   };
 
@@ -35,24 +96,37 @@ const Footer = () => {
     {
       name: "Facebook",
       icon: Facebook,
-      href: "https://www.facebook.com/ccsinfratech",
+      href: siteSettings?.facebookUrl,
     },
     {
       name: "Instagram",
       icon: Instagram,
-      href: "https://www.instagram.com/ccs.infratech/",
+      href: siteSettings?.instagramUrl,
     },
     {
       name: "Youtube",
       icon: Youtube,
-      href: "https://www.youtube.com/@CCSINFRATECH",
+      href: siteSettings?.youtubeUrl,
     },
     {
       name: "Linkedin",
       icon: LinkedinIcon,
-      href: "https://www.linkedin.com/company/ccs-infratech/",
+      href: siteSettings?.linkedinUrl,
     },
-  ];
+    {
+      name: "Twitter",
+      icon: Twitter,
+      href: siteSettings?.twitterUrl,
+    },
+  ].filter(
+    (
+      social
+    ): social is {
+      name: string;
+      icon: typeof Facebook;
+      href: string;
+    } => Boolean(social.href)
+  );
 
   return (
     <>
@@ -66,6 +140,7 @@ const Footer = () => {
             className="object-cover"
             priority
           />
+
           {/* Dark Overlay */}
           <div className="absolute inset-0 bg-black/65" />
         </div>
@@ -74,8 +149,8 @@ const Footer = () => {
         <div className="relative z-10">
           {/* Hero Section */}
           <div className="relative min-h-[420px] md:min-h-[500px] w-full py-16 md:py-24">
-            {/* Content */}
             <div className="h-full flex flex-col items-center justify-center px-4">
+
               {/* Main Heading */}
               <div className="text-center mb-10">
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
@@ -83,6 +158,7 @@ const Footer = () => {
                   <br />
                   home awaits
                 </h1>
+
                 <p className="text-white/90 text-base md:text-lg lg:text-xl max-w-2xl mx-auto">
                   Whether you're exploring our homes or envisioning something
                   <br className="hidden md:block" />
@@ -93,15 +169,19 @@ const Footer = () => {
               {/* CTA Button */}
               <div className="flex justify-center w-full">
                 <button
-                  onClick={() => setIsQuoteDialogOpen(true)}
+                  onClick={() =>
+                    setIsQuoteDialogOpen(true)
+                  }
                   className="bg-[#e1d18a] text-black font-bold rounded-full w-36 h-36 sm:w-40 sm:h-40 lg:w-40 lg:h-40 flex flex-col items-center justify-center shadow-2xl transition-all duration-300 hover:scale-105"
                 >
                   <span className="text-base sm:text-lg md:text-xl font-bold">
                     Get Your
                   </span>
+
                   <span className="text-base sm:text-lg md:text-xl font-bold">
                     Free
                   </span>
+
                   <span className="text-base sm:text-lg md:text-xl font-bold">
                     Quote
                   </span>
@@ -114,55 +194,71 @@ const Footer = () => {
           <div className="relative -mt-10 md:-mt-12 px-4 pb-8">
             <div className="max-w-7xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden">
               <div className="px-6 md:px-12 py-12">
+
                 {/* Main Footer Content */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 mb-12">
+
                   {/* Contact Information */}
                   <div className="space-y-4">
                     <a
-                      href="tel:+"
+                      href={phoneHref}
                       className="block text-2xl md:text-3xl font-bold text-gray-900 hover:text-gray-700 transition-colors duration-200"
                     >
-                      +(91) 70818-85577
+                      {phone}
                     </a>
+
                     <a
-                      href="mailto:info@ccsinfratech.com"
+                      href={`mailto:${email}`}
                       className="block text-xl md:text-2xl font-bold text-gray-900 hover:text-gray-700 transition-colors duration-200 break-all"
                     >
-                      info@ccsinfratech.com
+                      {email}
                     </a>
 
                     {/* Social Media Links */}
-                    <div className="flex font-sans gap-6 pt-2">
-                      {socialLinks.map((social) => {
-                        return (
-                          <a
-                            key={social.name}
-                            href={social.href}
-                            aria-label={social.name}
-                            className="text-gray-500 hover:text-gray-700 transition-colors duration-200"
-                          >
-                            <span className="text-sm">{social.name}</span>
-                          </a>
-                        );
-                      })}
-                    </div>
+                    {socialLinks.length > 0 && (
+                      <div className="flex font-sans gap-6 pt-2">
+                        {socialLinks.map((social) => {
+                          const Icon = social.icon;
 
+                          return (
+                            <a
+                              key={social.name}
+                              href={social.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={social.name}
+                              className="text-gray-500 hover:text-gray-700 transition-colors duration-200"
+                            >
+                              <span className="text-sm">
+                                {social.name}
+                              </span>
+                            </a>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* RERA Details */}
                     <div className="w-full">
                       <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl md:rounded-3xl p-3 md:p-4 shadow-lg border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-xl">
-                        {/* Subtle shine effect */}
                         <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 via-transparent to-transparent rounded-2xl md:rounded-3xl pointer-events-none" />
 
                         <div className="relative flex items-center justify-between gap-3 md:gap-4">
+
                           {/* RERA Details - Left Side */}
                           <div className="flex flex-col justify-center font-sans space-y-0.5 md:space-y-1 flex-1 min-w-0">
                             <p className="text-gray-600 text-[10px] md:text-xs font-semibold tracking-wider uppercase whitespace-nowrap">
                               UP RERA Registration No.
                             </p>
+
                             <p className="text-gray-900 text-xs md:text-sm lg:text-sm font-bold tracking-tight leading-tight truncate">
                               UPRERAPRJ389222/03/2025
                             </p>
+
                             <p className="text-gray-700 text-[10px] md:text-xs">
-                              <span className="font-medium">Website:</span>{" "}
+                              <span className="font-medium">
+                                Website:
+                              </span>{" "}
                               <a
                                 href="https://www.up-rera.in"
                                 target="_blank"
@@ -196,27 +292,31 @@ const Footer = () => {
                   {/* Navigation Links */}
                   <div className="grid grid-cols-2 mt-8 gap-8">
                     <nav className="space-y-3">
-                      {navigationLinks.column1.map((link) => (
-                        <Link
-                          key={link.label}
-                          href={link.href}
-                          className="block font-sans text-gray-800 hover:text-gray-900 transition-colors duration-200 text-sm md:text-base font-thin"
-                        >
-                          {link.label}
-                        </Link>
-                      ))}
+                      {navigationLinks.column1.map(
+                        (link) => (
+                          <Link
+                            key={link.label}
+                            href={link.href}
+                            className="block font-sans text-gray-800 hover:text-gray-900 transition-colors duration-200 text-sm md:text-base font-thin"
+                          >
+                            {link.label}
+                          </Link>
+                        )
+                      )}
                     </nav>
 
                     <nav className="space-y-3">
-                      {navigationLinks.column2.map((link) => (
-                        <Link
-                          key={link.label}
-                          href={link.href}
-                          className="block font-sans text-gray-800 hover:text-gray-900 transition-colors duration-200 text-sm md:text-base font-thin"
-                        >
-                          {link.label}
-                        </Link>
-                      ))}
+                      {navigationLinks.column2.map(
+                        (link) => (
+                          <Link
+                            key={link.label}
+                            href={link.href}
+                            className="block font-sans text-gray-800 hover:text-gray-900 transition-colors duration-200 text-sm md:text-base font-thin"
+                          >
+                            {link.label}
+                          </Link>
+                        )
+                      )}
                     </nav>
                   </div>
 
@@ -226,27 +326,29 @@ const Footer = () => {
                       height={200}
                       width={200}
                       src="/logo/mainlogo.png"
-                      alt="CSS Infratech"
+                      alt="CCS Infratech"
                       priority
                     />
+
                     <p className="text-gray-600 font-sans leading-relaxed">
-                      We are creators of transformative spaces that inspire,
-                      innovate, and endure.
+                      {companyDescription}
                     </p>
 
                     {/* Addresses */}
                     <div className="space-y-4 pt-2">
+
                       {/* Registered Office */}
                       <div className="space-y-1">
                         <div className="flex items-start gap-2">
                           <MapPin className="w-4 h-4 text-gray-600 mt-1 flex-shrink-0" />
+
                           <div>
                             <p className="text-xs font-semibold text-gray-900 uppercase tracking-wide">
                               Registered Office
                             </p>
+
                             <p className="text-xs text-gray-600 font-sans leading-relaxed mt-1">
-                              451, Third Lane, Near Netaji Park, Nishatganj, New
-                              Hyderabad, Lucknow - 226007
+                              {registeredOffice}
                             </p>
                           </div>
                         </div>
@@ -256,14 +358,14 @@ const Footer = () => {
                       <div className="space-y-1">
                         <div className="flex items-start gap-2">
                           <MapPin className="w-4 h-4 text-gray-600 mt-1 flex-shrink-0" />
+
                           <div>
                             <p className="text-xs font-semibold text-gray-900 uppercase tracking-wide">
                               Corporate Office
                             </p>
+
                             <p className="text-xs text-gray-600 font-sans leading-relaxed mt-1">
-                              AMOR, Sarai Shekh Farm, Near SBI Bank and Nayara
-                              Petrol Pump, Satrikhroad, Chinhat, Lucknow -
-                              227105
+                              {corporateOffice}
                             </p>
                           </div>
                         </div>
@@ -273,18 +375,12 @@ const Footer = () => {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="pt-8 border-t  font-sans border-gray-200 flex items-center justify-center flex-col sm:flex-row gap-4">
+                <div className="pt-8 border-t font-sans border-gray-200 flex items-center justify-center flex-col sm:flex-row gap-4">
                   <p className="text-sm text-gray-600">
-                    © 2025{" "}
-                    <Link
-                      href="/"
-                      className="font-semibold underline hover:text-gray-900"
-                    >
-                      ccsinfratech
-                    </Link>
-                    . All Rights Reserved
+                    {footerText}
                   </p>
                 </div>
+
               </div>
             </div>
           </div>
@@ -294,7 +390,9 @@ const Footer = () => {
       {/* Quote Dialog */}
       <ClubTowersModal
         open={isQuoteDialogOpen}
-        onClose={() => setIsQuoteDialogOpen(false)}
+        onClose={() =>
+          setIsQuoteDialogOpen(false)
+        }
       />
     </>
   );
