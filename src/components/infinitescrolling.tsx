@@ -59,7 +59,7 @@ const projects: Project[] = [
       "Our journey from agricultural trade to cold storage reflects our ability to evolve while staying true to our core values of integrity, innovation, and excellence in preserving quality.",
     location: "Lucknow, UP",
     image: "/images/COLD-STORAGE.jpg",
-    slug: "cold-storage",
+    slug: "chisti-cold-storage",
   },
 ];
 
