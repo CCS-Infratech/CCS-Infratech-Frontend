@@ -34,12 +34,16 @@ const nextConfig: NextConfig = {
         hostname: "*.s3.*.amazonaws.com",
       },
       {
-        protocol: 'https',
-        hostname: 'placehold.co',
+        protocol: "https",
+        hostname: "placehold.co",
       },
-      { protocol: 'https', hostname: 'picsum.photos' },
+      {
+        protocol: "https",
+        hostname: "picsum.photos",
+      },
     ],
   },
+
   eslint: {
     ignoreDuringBuilds: true,
   },
