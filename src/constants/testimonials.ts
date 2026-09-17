@@ -4,7 +4,7 @@ export const TESTIMONIALS = [
       "The AI-powered valuation tool helped me price my properties accurately. Closed deals 30% faster than traditional methods.",
     author: "Nikita",
     role: "Real Estate Agent",
-    image: "/images/avatar-placeholder.svg",
+    image: "/images/testimonials/nikita.jpg",
     rating: 5,
   },
   {
@@ -12,7 +12,7 @@ export const TESTIMONIALS = [
       "Virtual tours and 3D viewing features saved me countless hours. Made property hunting efficient and enjoyable from anywhere.",
     author: "Aarav",
     role: "Property Buyer",
-    image: "/images/avatar-placeholder.svg",
+    image: "/images/testimonials/aarav.jpg",
     rating: 5,
   },
   {
@@ -20,7 +20,7 @@ export const TESTIMONIALS = [
       "Managing multiple properties is now seamless. The automated maintenance tracking and tenant portal are game-changers.",
     author: "Ramesh",
     role: "Property Manager",
-    image: "/images/avatar-placeholder.svg",
+    image: "/images/testimonials/ramesh.jpg",
     rating: 5,
   },
   {
@@ -28,7 +28,7 @@ export const TESTIMONIALS = [
       "The document handling system is brilliant. Digital contracts and secure payments have simplified my rental processes.",
     author: "Arushi",
     role: "Property Owner",
-    image: "/images/avatar-placeholder.svg",
+    image: "/images/testimonials/arushi.jpg",
     rating: 5,
   },
   {
@@ -36,7 +36,7 @@ export const TESTIMONIALS = [
       "Market analytics and trend reports help me make data-driven decisions. Perfect tool for investment planning.",
     author: "Ravi",
     role: "Property Investor",
-    image: "/images/avatar-placeholder.svg",
+    image: "/images/testimonials/ravi.jpg",
     rating: 5,
   },
   {
@@ -44,7 +44,7 @@ export const TESTIMONIALS = [
       "Tenant screening and rental management features are exceptional. Reduced my vacancy rates significantly.",
     author: "Sumit",
     role: "Landlord",
-    image: "/images/avatar-placeholder.svg",
+    image: "/images/testimonials/sumit.jpg",
     rating: 5,
   },
 ];
