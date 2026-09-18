@@ -49,7 +49,7 @@ const projects: Project[] = [
     location: "Lucknow, UP",
     image: "/images/Clubhouse.jpg",
     slug: "amor-reality",
-    externalUrl: "https://amorvillaslucknow.com/",
+    externalUrl: "https://www.ccsamorlucknow.com/",
   },
   {
     id: "2",
