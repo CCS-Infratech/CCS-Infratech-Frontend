@@ -50,6 +50,16 @@ const Footer = () => {
     siteSettings?.corporateOffice ||
     "AMOR, Sarai Shekh Farm, Near SBI Bank and Nayara Petrol Pump, Satrikhroad, Chinhat, Lucknow - 227105";
 
+  const registeredOfficeMapHref =
+    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      registeredOffice
+    )}`;
+
+  const corporateOfficeMapHref =
+    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      corporateOffice
+    )}`;
+
   const companyDescription =
     siteSettings?.companyDescription ||
     "We are creators of transformative spaces that inspire, innovate, and endure.";
@@ -347,9 +357,14 @@ const Footer = () => {
                               Registered Office
                             </p>
 
-                            <p className="text-xs text-gray-600 font-sans leading-relaxed mt-1">
+                            <a
+                              href={registeredOfficeMapHref}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mt-1 block text-xs text-gray-600 font-sans leading-relaxed transition-colors hover:text-amber-600"
+                            >
                               {registeredOffice}
-                            </p>
+                            </a>
                           </div>
                         </div>
                       </div>
@@ -364,12 +379,18 @@ const Footer = () => {
                               Corporate Office
                             </p>
 
-                            <p className="text-xs text-gray-600 font-sans leading-relaxed mt-1">
+                            <a
+                              href={corporateOfficeMapHref}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mt-1 block text-xs text-gray-600 font-sans leading-relaxed transition-colors hover:text-amber-600"
+                            >
                               {corporateOffice}
-                            </p>
+                            </a>
                           </div>
                         </div>
                       </div>
+
                     </div>
                   </div>
                 </div>
