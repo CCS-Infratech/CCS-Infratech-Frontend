@@ -179,22 +179,11 @@ const Footer = () => {
               {/* CTA Button */}
               <div className="flex justify-center w-full">
                 <button
-                  onClick={() =>
-                    setIsQuoteDialogOpen(true)
-                  }
-                  className="bg-[#e1d18a] text-black font-bold rounded-full w-36 h-36 sm:w-40 sm:h-40 lg:w-40 lg:h-40 flex flex-col items-center justify-center shadow-2xl transition-all duration-300 hover:scale-105"
+                  type="button"
+                  onClick={() => setIsQuoteDialogOpen(true)}
+                  className="inline-flex items-center justify-center bg-[#e1d18a] text-black font-bold rounded-xl px-8 py-4 sm:px-10 sm:py-4 text-base sm:text-lg shadow-xl transition-all duration-300 hover:bg-[#d4c27c] hover:scale-[1.02]"
                 >
-                  <span className="text-base sm:text-lg md:text-xl font-bold">
-                    Get Your
-                  </span>
-
-                  <span className="text-base sm:text-lg md:text-xl font-bold">
-                    Free
-                  </span>
-
-                  <span className="text-base sm:text-lg md:text-xl font-bold">
-                    Quote
-                  </span>
+                  Request a Free Quote
                 </button>
               </div>
             </div>
