@@ -61,6 +61,17 @@ const projects: Project[] = [
     image: "/images/COLD-STORAGE.jpg",
     slug: "chisti-cold-storage",
   },
+  {
+    id: "3",
+    title: "CCS Cricket Academy",
+    status: "ONGOING",
+    excerpt:
+      "CCS Cricket Academy is dedicated to developing young and aspiring cricketers through professional training, structured coaching, fitness, discipline, and performance-focused programs.",
+    location: "Lucknow, UP",
+    image: "/images/ccs-academy-1.png",
+    slug: "ccs-cricket-academy",
+    externalUrl: "https://www.ccsacademylucknow.com/",
+  },
 ];
 
 // Stacked Project Card Component
