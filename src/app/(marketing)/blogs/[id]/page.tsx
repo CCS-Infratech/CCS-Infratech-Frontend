@@ -107,6 +107,91 @@ export default function BlogPostPage(): JSX.Element {
   const [relatedBlogs, setRelatedBlogs] = useState<Blog[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const getShareUrl = () => {
+    if (typeof window === "undefined") {
+      return "";
+    }
+
+    return window.location.href;
+  };
+
+  const getShareTitle = () => {
+    return blog?.title || "CCS Infratech";
+  };
+
+  const shareToFacebook = () => {
+    const url = getShareUrl();
+
+    if (!url) return;
+
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+        url
+      )}`,
+      "_blank",
+      "noopener,noreferrer,width=700,height=600"
+    );
+  };
+
+  const shareToTwitter = () => {
+    const url = getShareUrl();
+    const title = getShareTitle();
+
+    if (!url) return;
+
+    window.open(
+      `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+        url
+      )}&text=${encodeURIComponent(title)}`,
+      "_blank",
+      "noopener,noreferrer,width=700,height=600"
+    );
+  };
+
+  const shareToLinkedIn = () => {
+    const url = getShareUrl();
+
+    if (!url) return;
+
+    window.open(
+      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+        url
+      )}`,
+      "_blank",
+      "noopener,noreferrer,width=700,height=600"
+    );
+  };
+
+  const shareArticle = async () => {
+    const url = getShareUrl();
+
+    if (!url) return;
+
+    const title = getShareTitle();
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title,
+          text: blog?.summary || title,
+          url,
+        });
+
+        return;
+      }
+
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(url);
+        return;
+      }
+
+      window.prompt("Copy this link:", url);
+    } catch (error) {
+      console.log("Share cancelled:", error);
+    }
+  };
+
+
 
   // ✅ FIX: Add hydration state to prevent useScroll error
   const [isHydrated, setIsHydrated] = useState(false);
@@ -367,6 +452,7 @@ export default function BlogPostPage(): JSX.Element {
                 {/* Share buttons */}
                 <div className="flex items-center gap-2">
                   <motion.button
+                    type="button"
                     className="p-2 rounded-full text-gray-500 hover:text-amber-600 hover:bg-amber-50 transition-all"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
@@ -374,6 +460,9 @@ export default function BlogPostPage(): JSX.Element {
                     <BookmarkPlus size={20} />
                   </motion.button>
                   <motion.button
+                    type="button"
+                    onClick={shareArticle}
+                    aria-label="Share article"
                     className="p-2 rounded-full text-gray-500 hover:text-amber-600 hover:bg-amber-50 transition-all"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
@@ -423,17 +512,40 @@ export default function BlogPostPage(): JSX.Element {
             />
 
             {/* Mobile Share Buttons */}
-            <div className="flex justify-center space-x-3 mt-12 lg:hidden">
-              <button className="p-3 rounded-full bg-blue-600 text-white shadow-lg hover:shadow-xl transition-shadow">
+            <div className="flex justify-center space-x-3 mt-12">
+              <button
+                type="button"
+                onClick={shareToFacebook}
+                aria-label="Share on Facebook"
+                className="p-3 rounded-full bg-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+              >
                 <Facebook size={20} />
               </button>
-              <button className="p-3 rounded-full bg-sky-500 text-white shadow-lg hover:shadow-xl transition-shadow">
+
+              <button
+                type="button"
+                onClick={shareToTwitter}
+                aria-label="Share on Twitter"
+                className="p-3 rounded-full bg-sky-500 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+              >
                 <Twitter size={20} />
               </button>
-              <button className="p-3 rounded-full bg-blue-700 text-white shadow-lg hover:shadow-xl transition-shadow">
+
+              <button
+                type="button"
+                onClick={shareToLinkedIn}
+                aria-label="Share on LinkedIn"
+                className="p-3 rounded-full bg-blue-700 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+              >
                 <Linkedin size={20} />
               </button>
-              <button className="p-3 rounded-full bg-gray-800 text-white shadow-lg hover:shadow-xl transition-shadow">
+
+              <button
+                type="button"
+                onClick={shareArticle}
+                aria-label="Share article"
+                className="p-3 rounded-full bg-gray-800 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+              >
                 <Share2 size={20} />
               </button>
             </div>
@@ -482,6 +594,7 @@ export default function BlogPostPage(): JSX.Element {
               </div>
               <div className="flex items-center gap-2">
                 <motion.button
+                  type="button"
                   className="p-2 rounded-full text-gray-500 hover:text-amber-600 hover:bg-amber-50 transition-all"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
@@ -489,6 +602,9 @@ export default function BlogPostPage(): JSX.Element {
                   <BookmarkPlus size={22} />
                 </motion.button>
                 <motion.button
+                  type="button"
+                  onClick={shareArticle}
+                  aria-label="Share article"
                   className="p-2 rounded-full text-gray-500 hover:text-amber-600 hover:bg-amber-50 transition-all"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
