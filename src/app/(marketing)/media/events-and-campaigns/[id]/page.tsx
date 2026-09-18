@@ -25,7 +25,7 @@ const EventPage = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  const gallery = galleryData?.gallery;
+  const gallery = galleryData?.data;
 
   const [isOpen, setIsOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);

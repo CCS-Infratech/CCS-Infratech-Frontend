@@ -30,7 +30,7 @@ export default function EventsSection() {
     refetchOnWindowFocus: false,
   });
 
-  const galleries = galleriesData?.galleries || [];
+  const galleries = galleriesData?.data || [];
 
   return (
     <section className="w-full bg-black">
@@ -133,7 +133,11 @@ export default function EventsSection() {
         {!isLoading && !isError && (
           <>
             {galleries.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div
+                className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ${
+                  galleries.length === 1 ? "md:max-w-xl lg:max-w-xl mx-auto" : ""
+                }`}
+              >
                 {galleries.map((gallery: any, idx: number) => {
                   const thumbnailImage = gallery.images?.[0];
 
