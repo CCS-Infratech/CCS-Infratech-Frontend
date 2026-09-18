@@ -58,6 +58,8 @@ export default function ProjectCard({
   const image = getProjectImage(project);
   const year = getProjectYear(project);
   const summary = getProjectSummary(project);
+  const href = getProjectHref(project);
+  const isExternal = href.startsWith("http");
 
   return (
     <motion.div
@@ -68,7 +70,9 @@ export default function ProjectCard({
       className={featured ? "sm:col-span-2" : ""}
     >
       <Link
-        href={getProjectHref(project)}
+        href={href}
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noopener noreferrer" : undefined}
         className="group block rounded-3xl focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-4 focus-visible:ring-offset-black"
       >
         <article

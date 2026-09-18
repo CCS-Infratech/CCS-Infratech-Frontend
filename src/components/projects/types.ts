@@ -65,8 +65,14 @@ export function getStatusLabel(status?: string | null): string {
   return status === "COMPLETED" ? "Completed" : "Under construction";
 }
 
+const PROJECT_EXTERNAL_URLS: Record<string, string> = {
+  "ccs-cricket-academy": "https://www.ccsacademylucknow.com/",
+};
+
 export function getProjectHref(project: PortfolioProject): string {
-  return `/projects/${project.slug || project.id}`;
+  const slug = project.slug || project.id;
+
+  return PROJECT_EXTERNAL_URLS[slug] || `/projects/${slug}`;
 }
 
 export function getProjectSummary(project?: PortfolioProject | null): string {
