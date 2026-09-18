@@ -34,6 +34,7 @@ export function QuickFacts({ facts }: { facts: QuickFact[] }) {
             {fact.icon}
             {fact.label}
           </dt>
+
           <dd className="mt-2 text-lg font-bold text-zinc-50 sm:text-xl">
             {fact.value}
           </dd>
@@ -51,16 +52,26 @@ export interface ProjectSpec {
   image: string;
 }
 
-export function SpecificationsSection({ specs }: { specs: ProjectSpec[] }) {
+export function SpecificationsSection({
+  specs,
+}: {
+  specs: ProjectSpec[];
+}) {
   if (specs.length === 0) return null;
 
   return (
-    <section id="specifications" className="scroll-mt-36 py-20 md:py-28">
+    <section
+      id="specifications"
+      className="scroll-mt-36 py-20 md:py-28"
+    >
       <SectionHeading
         eyebrow="Building details"
         title={
           <>
-            Specifications &amp; <span className="text-amber-400">features</span>
+            Specifications &amp;{" "}
+            <span className="text-amber-400">
+              features
+            </span>
           </>
         }
         description="What goes into the build — materials, systems and finishes, spelled out."
@@ -73,7 +84,10 @@ export function SpecificationsSection({ specs }: { specs: ProjectSpec[] }) {
             initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.5, delay: Math.min(index, 5) * 0.07 }}
+            transition={{
+              duration: 0.5,
+              delay: Math.min(index, 5) * 0.07,
+            }}
             className="group flex flex-col overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-900/60 transition-colors duration-300 hover:border-amber-400/40"
           >
             {spec.image && (
@@ -87,8 +101,12 @@ export function SpecificationsSection({ specs }: { specs: ProjectSpec[] }) {
                 />
               </div>
             )}
+
             <div className="flex flex-1 flex-col p-6">
-              <h3 className="text-xl font-bold text-zinc-50">{spec.title}</h3>
+              <h3 className="text-xl font-bold text-zinc-50">
+                {spec.title}
+              </h3>
+
               {spec.description && (
                 <p className="mt-3 text-sm leading-relaxed text-zinc-400">
                   {spec.description}
@@ -119,13 +137,19 @@ export function AmenitiesSection({
   if (amenities.length === 0) return null;
 
   return (
-    <section id="amenities" className="scroll-mt-36 py-20 md:py-28">
+    <section
+      id="amenities"
+      className="scroll-mt-36 py-20 md:py-28"
+    >
       <SectionHeading
         align="center"
         eyebrow="Lifestyle"
         title={
           <>
-            Amenities at <span className="text-amber-400">{projectTitle}</span>
+            Amenities at{" "}
+            <span className="text-amber-400">
+              {projectTitle}
+            </span>
           </>
         }
         description={`${amenities.length} shared facilities designed around how residents actually use the place.`}
@@ -138,7 +162,10 @@ export function AmenitiesSection({
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.45, delay: Math.min(index, 8) * 0.04 }}
+            transition={{
+              duration: 0.45,
+              delay: Math.min(index, 8) * 0.04,
+            }}
             className="flex flex-col items-center rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 text-center transition-all duration-300 hover:-translate-y-1 hover:border-amber-400/40 sm:p-7"
           >
             <div className="relative mb-4 h-12 w-12 sm:h-16 sm:w-16">
@@ -150,6 +177,7 @@ export function AmenitiesSection({
                 className="object-contain"
               />
             </div>
+
             <p className="text-sm font-medium text-zinc-200 sm:text-base">
               {amenity.title}
             </p>
@@ -175,7 +203,9 @@ export function LocationSection({
   mapUrl?: string;
   nearbyAttractions: string[];
 }) {
-  const query = address || `${projectTitle} ${location || ""}`.trim();
+  const query =
+    address ||
+    `${projectTitle} ${location || ""}`.trim();
 
   // Google only allows *embed* URLs to be framed. Anything else — a
   // maps.app.goo.gl share link, a /maps/place link — is served with
@@ -183,26 +213,37 @@ export function LocationSection({
   // as the directions target and frame a search embed of the address instead.
   const isEmbeddable =
     !!mapUrl &&
-    (mapUrl.includes("/maps/embed") || mapUrl.includes("output=embed"));
+    (mapUrl.includes("/maps/embed") ||
+      mapUrl.includes("output=embed"));
 
   const embedSrc = isEmbeddable
     ? mapUrl
     : query
-      ? `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`
+      ? `https://www.google.com/maps?q=${encodeURIComponent(
+          query
+        )}&output=embed`
       : undefined;
 
   const directionsUrl =
     mapUrl && !isEmbeddable
       ? mapUrl
-      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+          query
+        )}`;
 
   return (
-    <section id="location" className="scroll-mt-36 py-20 md:py-28">
+    <section
+      id="location"
+      className="scroll-mt-36 py-20 md:py-28"
+    >
       <SectionHeading
         eyebrow="Getting there"
         title={
           <>
-            Where you&apos;ll <span className="text-amber-400">find it</span>
+            Where you&apos;ll{" "}
+            <span className="text-amber-400">
+              find it
+            </span>
           </>
         }
         description={
@@ -220,15 +261,26 @@ export function LocationSection({
           transition={{ duration: 0.6 }}
           className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-8"
         >
-          <h3 className="text-lg font-bold text-zinc-50">Location details</h3>
+          <h3 className="text-lg font-bold text-zinc-50">
+            Location details
+          </h3>
 
           <div className="mt-5 flex items-start gap-3">
             <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
+
             <div>
-              <p className="text-sm font-medium text-zinc-200">Address</p>
-              <p className="mt-1 text-sm leading-relaxed text-zinc-400">
-                {address}
+              <p className="text-sm font-medium text-zinc-200">
+                Address
               </p>
+
+              <a
+                href={directionsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-1 block text-sm leading-relaxed text-zinc-400 transition-colors hover:text-amber-400"
+              >
+                {address}
+              </a>
             </div>
           </div>
 
@@ -237,16 +289,20 @@ export function LocationSection({
               <h4 className="text-sm font-semibold text-zinc-200">
                 Nearby
               </h4>
+
               <ul className="mt-3 space-y-2.5">
-                {nearbyAttractions.map((attraction, index) => (
-                  <li
-                    key={`${attraction}-${index}`}
-                    className="flex items-start gap-2.5 text-sm text-zinc-400"
-                  >
-                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
-                    {attraction}
-                  </li>
-                ))}
+                {nearbyAttractions.map(
+                  (attraction, index) => (
+                    <li
+                      key={`${attraction}-${index}`}
+                      className="flex items-start gap-2.5 text-sm text-zinc-400"
+                    >
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
+
+                      {attraction}
+                    </li>
+                  )
+                )}
               </ul>
             </div>
           )}
@@ -285,9 +341,12 @@ export function LocationSection({
           ) : (
             <div className="flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
               <MapPin className="h-10 w-10 text-amber-400/70" />
+
               <p className="text-sm text-zinc-400">
-                An interactive map isn&apos;t available for this project yet.
+                An interactive map isn&apos;t available for
+                this project yet.
               </p>
+
               <a
                 href={directionsUrl}
                 target="_blank"
