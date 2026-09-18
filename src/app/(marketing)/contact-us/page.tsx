@@ -82,11 +82,17 @@ export default function ContactSection() {
   const phoneHref = `tel:${phone.replace(/[^\d+]/g, "")}`;
   const emailHref = `mailto:${email}`;
 
+  const addressMapHref =
+    siteSettings?.mapUrl?.trim() ||
+    siteSettings?.googleMapUrl?.trim() ||
+    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      address
+    )}`;
+
   return (
     <section className="w-full bg-white overflow-hidden">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-16 py-8 sm:py-12 lg:py-20 lg:mt-11">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-20 xl:gap-28">
-
           {/* Left Side - Info */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -128,11 +134,7 @@ export default function ContactSection() {
                     {address}
                   </span>
                 }
-                href={
-                  siteSettings?.mapUrl ||
-                  siteSettings?.googleMapUrl ||
-                  "#"
-                }
+                href={addressMapHref}
               />
             </div>
           </motion.div>
