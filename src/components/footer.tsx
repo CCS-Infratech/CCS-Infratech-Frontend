@@ -66,7 +66,7 @@ const Footer = () => {
 
   const footerText =
     siteSettings?.footerText ||
-    "© 2025 ccsinfratech. All Rights Reserved";
+    "© 2026 ccsinfratech. All Rights Reserved";
 
   const phoneHref = `tel:${phone.replace(/[^\d+]/g, "")}`;
 
