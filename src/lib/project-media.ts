@@ -1,11 +1,11 @@
 import { PortfolioProject } from "@/components/projects/project-card";
 
 export function getProjectImage(project?: PortfolioProject | null) {
-  if (!project) return "/images/4.jpg";
+  if (!project) return "/images/optimized/4.webp";
   const firstImg = project.images?.[0];
   if (typeof firstImg === "string" && firstImg) return firstImg;
   if (firstImg && typeof firstImg === "object" && firstImg.url) return firstImg.url;
-  return project.logoUrl || "/images/4.jpg";
+  return project.logoUrl || "/images/optimized/4.webp";
 }
 
 export function getProjectYear(project?: PortfolioProject | null) {

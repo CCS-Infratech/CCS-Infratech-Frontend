@@ -27,7 +27,7 @@ export default function MasterpiecesSection() {
   const galleryItems = [
     {
       id: "main",
-      src: "/images/1.jpg",
+      src: "/images/optimized/1.webp",
       alt: "Luxury Villa Exterior",
       width: 900,
       height: 600,
@@ -36,7 +36,7 @@ export default function MasterpiecesSection() {
     },
     {
       id: "long",
-      src: "/images/2.jpg",
+      src: "/images/optimized/2.webp",
       alt: "Modern Interior Design",
       width: 500,
       height: 300,
@@ -44,7 +44,7 @@ export default function MasterpiecesSection() {
     },
     {
       id: "circle",
-      src: "/images/3.jpg",
+      src: "/images/optimized/3.webp",
       alt: "Elegant Pool Area",
       width: 400,
       height: 400,
@@ -52,7 +52,7 @@ export default function MasterpiecesSection() {
     },
     {
       id: "small",
-      src: "/images/4.jpg",
+      src: "/images/optimized/4.webp",
       alt: "Premium Living Space",
       width: 300,
       height: 300,
@@ -290,7 +290,7 @@ export default function MasterpiecesSection() {
                   onClick={() => openLightbox(3)}
                 >
                   <Image
-                    src="/images/4.jpg"
+                    src="/images/optimized/4.webp"
                     alt="Amor - Premium Luxury Villas"
                     width={800}
                     height={600}

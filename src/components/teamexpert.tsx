@@ -29,7 +29,7 @@ const fallbackPartners: LeadershipMember[] = [
     id: "fallback-2",
     name: "Zeeshan Aslam",
     designation: "Partner",
-    imageUrl: "/images/zeeshan.JPG",
+    imageUrl: "/images/optimized/zeeshan.webp",
     experience: "15+ Years",
     bio: null,
     isActive: true,

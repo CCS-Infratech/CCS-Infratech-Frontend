@@ -246,7 +246,7 @@ export default function ScheduleVisitModal({
               <div className="hidden lg:block relative bg-gradient-to-br from-gray-900 to-gray-800 p-8 text-white">
                 <div className="absolute inset-0">
                   <Image
-                    src="/images/EntryGate.png"
+                    src="/images/optimized/EntryGate.webp"
                     alt="Site"
                     fill
                     className="object-cover opacity-40"

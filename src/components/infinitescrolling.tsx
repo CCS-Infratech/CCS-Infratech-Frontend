@@ -47,7 +47,7 @@ const projects: Project[] = [
     excerpt:
       "AMOR represents our ambition to redefine modern living. As Lucknow's first AI-powered villa community, this RERA-approved project features 105 luxurious villas that blend Roman-inspired architecture with cutting-edge smart home technology.",
     location: "Lucknow, UP",
-    image: "/images/Clubhouse.jpg",
+    image: "/images/optimized/Clubhouse.webp",
     slug: "amor-reality",
     externalUrl: "https://www.ccsamorlucknow.com/",
   },
@@ -68,7 +68,7 @@ const projects: Project[] = [
     excerpt:
       "CCS Cricket Academy is dedicated to developing young and aspiring cricketers through professional training, structured coaching, fitness, discipline, and performance-focused programs.",
     location: "Lucknow, UP",
-    image: "/images/ccs-academy-1.png",
+    image: "/images/optimized/ccs-academy-1.webp",
     slug: "ccs-cricket-academy",
     externalUrl: "https://www.ccsacademylucknow.com/",
   },
@@ -273,7 +273,7 @@ const ProjectsShowcase = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center my-16 md:my-24"
+          className="text-center mt-10 md:mt-14 mb-16 md:mb-20"
         >
           <span className="inline-block px-4 py-2 bg-amber-500 text-white rounded-full text-xs font-bold uppercase tracking-wider mb-6">
             WHO WE ARE
@@ -292,10 +292,10 @@ const ProjectsShowcase = () => {
       </div>
 
       {/* Stacked Cards Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <div
           className="relative"
-          style={{ height: `${projects.length * 100}vh` }}
+          style={{ height: `calc(${projects.length * 90}vh + 160px)` }}
         >
           {projects.map((project, index) => (
             <StackedProjectCard

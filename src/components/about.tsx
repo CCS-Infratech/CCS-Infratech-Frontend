@@ -87,7 +87,7 @@ const AboutSection = () => {
           <motion.div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10 opacity-40"></motion.div>
 
           <Image
-            src="/images/about.png"
+            src="/images/optimized/about.webp"
             alt="Elegant building architecture"
             fill
             sizes="(max-width: 768px) 100vw, 50vw"

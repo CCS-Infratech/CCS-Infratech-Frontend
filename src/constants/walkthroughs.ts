@@ -16,7 +16,7 @@ export const WALKTHROUGHS: Walkthrough[] = [
       "Take a first look at the setting, architecture, and lifestyle at Amor.",
     videoUrl:
       "https://res.cloudinary.com/dtwlug9w9/video/upload/v1767467893/video_eb0r0t.mp4",
-    thumbnail: "/images/DayView.png",
+    thumbnail: "/images/optimized/DayView.webp",
   },
   {
     id: "amor-living",
@@ -25,7 +25,7 @@ export const WALKTHROUGHS: Walkthrough[] = [
       "Explore the spaces designed for relaxed, modern family living.",
     videoUrl:
       "https://res.cloudinary.com/dtwlug9w9/video/upload/v1767467893/video_eb0r0t.mp4",
-    thumbnail: "/images/ClubhouseNightView.jpg",
+    thumbnail: "/images/optimized/ClubhouseNightView.webp",
   },
   {
     id: "amor-amenities",
@@ -34,6 +34,6 @@ export const WALKTHROUGHS: Walkthrough[] = [
       "Discover the amenities and outdoor spaces that complete the community.",
     videoUrl:
       "https://res.cloudinary.com/dtwlug9w9/video/upload/v1767467893/video_eb0r0t.mp4",
-    thumbnail: "/images/BadmintonCourt.png",
+    thumbnail: "/images/optimized/BadmintonCourt.webp",
   },
 ];

@@ -47,7 +47,7 @@ export default function EventsSection() {
           style={{ scale: heroScale, y: heroY }}
         >
           <Image
-            src="/images/DayView2.png"
+            src="/images/optimized/DayView2.webp"
             alt="Events and Campaigns"
             fill
             className="object-cover brightness-[0.3]"

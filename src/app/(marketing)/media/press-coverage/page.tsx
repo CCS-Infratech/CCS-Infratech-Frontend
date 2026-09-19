@@ -164,7 +164,7 @@ export default function EventsSection() {
           style={{ scale: heroScale, y: heroY }}
         >
           <Image
-            src="/images/EntryGate.png"
+            src="/images/optimized/EntryGate.webp"
             alt="Press Coverage"
             fill
             className="object-cover brightness-[0.35]"

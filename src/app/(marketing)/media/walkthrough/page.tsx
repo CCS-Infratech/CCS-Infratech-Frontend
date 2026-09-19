@@ -170,7 +170,7 @@ export default function WalkthroughPage() {
             className="object-cover brightness-[0.35]"
             fill
             priority
-            src="/images/DayView2.png"
+            src="/images/optimized/DayView2.webp"
           />
 
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/45 to-black/80" />

@@ -45,7 +45,7 @@ export default function AboutUs() {
           style={{ scale: heroScale, y: heroY }}
         >
           <Image
-            src="/images/3.jpg"
+            src="/images/optimized/3.webp"
             alt="Construction Site"
             fill
             className="object-cover brightness-[0.5]"
@@ -106,13 +106,13 @@ export default function AboutUs() {
       </motion.div>
 
       {/* About Us Content - Modernized */}
-      <Wrapper className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-28">
+      <Wrapper className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 lg:pt-24 pb-8 sm:pb-10 lg:pb-12">
         {/* Decorative elements */}
         <div className="absolute top-10 sm:top-20 right-0 w-48 h-48 sm:w-64 sm:h-64 bg-amber-400/20 rounded-full blur-3xl -z-10" />
         <div className="absolute bottom-20 sm:bottom-40 left-0 w-56 h-56 sm:w-80 sm:h-80 bg-zinc-800/10 rounded-full blur-3xl -z-10" />
 
         <motion.div
-          className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center mb-20 sm:mb-28 lg:mb-36"
+          className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center mb-12 sm:mb-16 lg:mb-20"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
@@ -164,7 +164,7 @@ export default function AboutUs() {
           <div className="relative order-1 lg:order-2">
             <div className="w-full h-[300px] sm:h-[400px] lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
               <Image
-                src="/images/aerial.png"
+                src="/images/optimized/aerial.webp"
                 alt="Our Legacy"
                 fill
                 className="object-cover"

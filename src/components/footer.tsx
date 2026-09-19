@@ -144,7 +144,7 @@ const Footer = () => {
         {/* Background Image Container - Full Height */}
         <div className="absolute inset-0 z-0 h-full">
           <Image
-            src="/images/Clubhouse.jpg"
+            src="/images/optimized/Clubhouse.webp"
             alt="Buildings background"
             fill
             className="object-cover"
