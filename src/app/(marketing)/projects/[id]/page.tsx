@@ -297,9 +297,12 @@ export default function ProjectDetailPage() {
       icon: <CalendarDays className="h-3.5 w-3.5 text-amber-500" />,
     });
   } else if (project.amenities.length) {
+    const amenitiesCount =
+      project.slug === "amor" ? 34 : project.amenities.length;
+
     facts.push({
       label: "Amenities",
-      value: `${project.amenities.length}+`,
+      value: `${amenitiesCount}+`,
       icon: <Layers className="h-3.5 w-3.5 text-amber-500" />,
     });
   }

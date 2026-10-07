@@ -48,8 +48,8 @@ const projects: Project[] = [
       "AMOR represents our ambition to redefine modern living. As Lucknow's first AI-powered villa community, this RERA-approved project features 105 luxurious villas that blend Roman-inspired architecture with cutting-edge smart home technology.",
     location: "Lucknow, UP",
     image: "/images/optimized/Clubhouse.webp",
-    slug: "amor-reality",
-    externalUrl: "https://www.ccsamorlucknow.com/",
+    slug: "amor",
+    externalUrl: "https://amorlucknow.com",
   },
   {
     id: "2",

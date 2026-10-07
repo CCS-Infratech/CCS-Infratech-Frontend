@@ -10,7 +10,7 @@ const Hero = React.memo(function Hero() {
       {/* Background Video */}
       <video
         className="absolute inset-0 h-full w-full object-cover"
-        src="https://res.cloudinary.com/dtwlug9w9/video/upload/v1767467893/video_eb0r0t.mp4"
+        src="/ccs-home-hero.mp4"
         poster="/hero-poster.jpg"
         autoPlay
         loop
@@ -52,7 +52,7 @@ const Hero = React.memo(function Hero() {
 
           <AnimationContainer animation="fadeUp" delay={0.8}>
             <div className="mt-4">
-              <Link href="/projects/amor-reality">
+              <Link href="/projects/amor">
                 <Button
                   size="lg"
                   className="rounded-full bg-[#e1d18a] px-6 py-2.5 text-base font-semibold text-black shadow-lg hover:bg-[#d4c27c] transition"

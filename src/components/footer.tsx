@@ -42,6 +42,8 @@ const Footer = () => {
     siteSettings?.email ||
     "info@ccsinfratech.com";
 
+  const mainAddress = siteSettings?.address || "";
+
   const registeredOffice =
     siteSettings?.registeredOffice ||
     "451, Third Lane, Near Netaji Park, Nishatganj, New Hyderabad, Lucknow - 226007";
@@ -49,6 +51,11 @@ const Footer = () => {
   const corporateOffice =
     siteSettings?.corporateOffice ||
     "AMOR, Sarai Shekh Farm, Near SBI Bank and Nayara Petrol Pump, Satrikhroad, Chinhat, Lucknow - 227105";
+
+  const mainAddressMapHref =
+    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      mainAddress
+    )}`;
 
   const registeredOfficeMapHref =
     `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
@@ -228,9 +235,10 @@ const Footer = () => {
                               aria-label={social.name}
                               className="text-gray-500 hover:text-gray-700 transition-colors duration-200"
                             >
-                              <span className="text-sm">
-                                {social.name}
-                              </span>
+                              <Icon
+                                className="w-5 h-5"
+                                aria-hidden="true"
+                              />
                             </a>
                           );
                         })}
@@ -335,6 +343,30 @@ const Footer = () => {
 
                     {/* Addresses */}
                     <div className="space-y-4 pt-2">
+
+                      {/* Main Office */}
+                      {mainAddress && (
+                        <div className="space-y-1">
+                          <div className="flex items-start gap-2">
+                            <MapPin className="w-4 h-4 text-gray-600 mt-1 flex-shrink-0" />
+
+                            <div>
+                              <p className="text-xs font-semibold text-gray-900 uppercase tracking-wide">
+                                Main Office
+                              </p>
+
+                              <a
+                                href={mainAddressMapHref}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="mt-1 block text-xs text-gray-600 font-sans leading-relaxed transition-colors hover:text-amber-600"
+                              >
+                                {mainAddress}
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
                       {/* Registered Office */}
                       <div className="space-y-1">

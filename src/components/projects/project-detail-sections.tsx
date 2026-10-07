@@ -174,7 +174,7 @@ export function AmenitiesSection({
                 alt=""
                 fill
                 sizes="64px"
-                className="object-contain"
+                className="object-contain brightness-0 invert"
               />
             </div>
 

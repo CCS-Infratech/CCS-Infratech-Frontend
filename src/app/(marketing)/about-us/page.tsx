@@ -91,7 +91,7 @@ export default function AboutUs() {
             transition={{ duration: 1, delay: 1.1 }}
             className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center"
           >
-            <Link href={`/projects/amor-reality`}>
+            <Link href={`/projects/amor`}>
               <button className="w-full sm:w-auto bg-white hover:bg-amber-50 text-black px-5 sm:px-6 py-2.5 sm:py-3 rounded-full text-sm font-bold shadow-2xl transition-all duration-300 hover:shadow-amber-500/20 hover:scale-105">
                 Explore AMOR Project
               </button>
