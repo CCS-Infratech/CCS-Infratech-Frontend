@@ -107,6 +107,9 @@ export default function BlogPostPage(): JSX.Element {
   const [relatedBlogs, setRelatedBlogs] = useState<Blog[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [subscribeEmail, setSubscribeEmail] = useState("");
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [subscribeMessage, setSubscribeMessage] = useState<string | null>(null);
   const getShareUrl = () => {
     if (typeof window === "undefined") {
       return "";
@@ -192,6 +195,54 @@ export default function BlogPostPage(): JSX.Element {
   };
 
 
+
+  const handleSubscribe = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+
+    const email = subscribeEmail.trim();
+
+    if (!email) {
+      setSubscribeMessage("Please enter your email address.");
+      return;
+    }
+
+    setIsSubscribing(true);
+    setSubscribeMessage(null);
+
+    try {
+      const response = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data?.error || "Failed to process your subscription."
+        );
+      }
+
+      setSubscribeEmail("");
+      setSubscribeMessage(
+        data?.message || "Thanks for subscribing to CCS Infratech."
+      );
+    } catch (error) {
+      console.error("Newsletter subscription failed:", error);
+      setSubscribeMessage(
+        error instanceof Error
+          ? error.message
+          : "Failed to process your subscription. Please try again."
+      );
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
 
   // ✅ FIX: Add hydration state to prevent useScroll error
   const [isHydrated, setIsHydrated] = useState(false);
@@ -749,20 +800,40 @@ export default function BlogPostPage(): JSX.Element {
 
               <form
                 className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
-                onSubmit={(e) => e.preventDefault()}
+                onSubmit={handleSubscribe}
               >
                 <input
                   type="email"
+                  value={subscribeEmail}
+                  onChange={(e) => {
+                    setSubscribeEmail(e.target.value);
+                    if (subscribeMessage) {
+                      setSubscribeMessage(null);
+                    }
+                  }}
                   placeholder="Your email address"
-                  className="flex-grow px-5 py-3.5 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900"
+                  aria-label="Email address"
+                  required
+                  disabled={isSubscribing}
+                  className="flex-grow px-5 py-3.5 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-gray-900 disabled:opacity-60"
                 />
                 <button
                   type="submit"
-                  className="px-8 py-3.5 bg-amber-500 hover:bg-amber-600 text-white rounded-full transition-colors font-medium whitespace-nowrap"
+                  disabled={isSubscribing}
+                  className="px-8 py-3.5 bg-amber-500 hover:bg-amber-600 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-full transition-colors font-medium whitespace-nowrap"
                 >
-                  Subscribe
+                  {isSubscribing ? "Subscribing..." : "Subscribe"}
                 </button>
               </form>
+
+              {subscribeMessage && (
+                <p
+                  className="mt-3 text-sm text-gray-600"
+                  aria-live="polite"
+                >
+                  {subscribeMessage}
+                </p>
+              )}
             </motion.div>
           </div>
         </section>
