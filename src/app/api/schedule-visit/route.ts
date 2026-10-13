@@ -40,6 +40,41 @@ export async function POST(request: Request) {
 
     const visitTime = timeSlotMap[time] || time;
 
+    // Sync the site visit to the CCS CRM.
+    // Keep the existing email flow working even if CRM is unavailable.
+    const backendUrl =
+      process.env.CCS_BACKEND_URL || "http://127.0.0.1:8000";
+
+    try {
+      const crmResponse = await fetch(`${backendUrl}/api/v1/leads`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "SITE_VISIT",
+          name: fullName.trim(),
+          phone: phone.trim(),
+          email: email?.trim() || undefined,
+          visitDate: date,
+          visitTime: visitTime,
+          message: "Site Visit Request",
+        }),
+        cache: "no-store",
+      });
+
+      if (!crmResponse.ok) {
+        const crmError = await crmResponse.text();
+        console.error(
+          "CRM site visit sync failed:",
+          crmResponse.status,
+          crmError,
+        );
+      }
+    } catch (crmError) {
+      console.error("CRM site visit sync error:", crmError);
+    }
+
     const adminMailOptions = {
       from: MAIL_FROM,
       to: process.env.EMAIL_TO,

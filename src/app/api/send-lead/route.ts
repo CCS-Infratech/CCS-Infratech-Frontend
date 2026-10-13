@@ -29,6 +29,40 @@ export async function POST(request: Request) {
 
     const budgetDisplay = budgetMap[budget] || budget;
 
+    // Sync the quote request to the CCS CRM.
+    // Keep the existing email flow working even if CRM is unavailable.
+    const backendUrl =
+      process.env.CCS_BACKEND_URL || "http://127.0.0.1:8000";
+
+    try {
+      const crmResponse = await fetch(`${backendUrl}/api/v1/leads`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "LEAD",
+          name: fullName.trim(),
+          phone: phone.trim(),
+          email: email.trim(),
+          budget: budgetDisplay,
+          message: "Request a Free Quote",
+        }),
+        cache: "no-store",
+      });
+
+      if (!crmResponse.ok) {
+        const crmError = await crmResponse.text();
+        console.error(
+          "CRM lead sync failed:",
+          crmResponse.status,
+          crmError,
+        );
+      }
+    } catch (crmError) {
+      console.error("CRM lead sync error:", crmError);
+    }
+
     const adminMailOptions = {
       from: MAIL_FROM,
       to: process.env.EMAIL_TO,
